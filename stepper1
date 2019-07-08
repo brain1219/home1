@@ -1,25 +1,51 @@
-#include <Stepper.h>
+#include <StepperMulti.h>
 
-const int STEPS = 200;
-Stepper stepper1(STEPS, 2,4,3,5);
-Stepper stepper2(STEPS, 6,8,7,9); 
-
+StepperMulti stepper1(200, 2, 4, 3, 5);
+StepperMulti stepper2(200, 6, 8, 7, 9);
+double ang = 0;
+ 
 void setup()
 {
+  Serial.begin(9600);
   stepper1.setSpeed(60);
   stepper2.setSpeed(60);
-  Serial.begin(9600);
 }
-
+ 
 void loop()
 {
-   if(Serial.available()) {
-    int val=Serial.parseInt(); //회전각 int형으로 읽기
-    
-    val=map(val,0,360,0,200); //회전각 스텝 수
-    stepper1.step(val);
-    stepper2.step(val);
-    Serial.println(val);
-    delay(10);
+  if (Serial.available())
+  {
+    int order=Serial.parseInt(); //회전각 int형으로 읽기
+
+    if(order == 0) front();
+    if(order == 1) back();
+    if(order == 2) left(); 
+    if(order == 3) right();
   }
+  stepper1.moveStep();
+  stepper2.moveStep();
+}
+
+void front() 
+{
+  stepper1.setStep(-200);
+  stepper2.setStep(200);
+}
+
+void back()
+{
+    stepper1.setStep(200);
+    stepper2.setStep(-200);
+}
+
+void left()
+{
+  stepper1.setStep(200);
+  stepper2.setStep(200);
+}
+
+void right()
+{
+  stepper1.setStep(-200);
+  stepper2.setStep(-200);
 }
