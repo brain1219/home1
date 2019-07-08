@@ -1,0 +1,25 @@
+#include <Stepper.h>
+
+const int STEPS = 200;
+Stepper stepper1(STEPS, 2,4,3,5);
+Stepper stepper2(STEPS, 6,8,7,9); 
+
+void setup()
+{
+  stepper1.setSpeed(60);
+  stepper2.setSpeed(60);
+  Serial.begin(9600);
+}
+
+void loop()
+{
+   if(Serial.available()) {
+    int val=Serial.parseInt(); //회전각 int형으로 읽기
+    
+    val=map(val,0,360,0,200); //회전각 스텝 수
+    stepper1.step(val);
+    stepper2.step(val);
+    Serial.println(val);
+    delay(10);
+  }
+}
