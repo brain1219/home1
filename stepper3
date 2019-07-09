@@ -1,0 +1,67 @@
+#include <StepperMulti.h>
+#include <math.h>
+
+StepperMulti stepper1(200, 29, 27, 28, 26);
+StepperMulti stepper2(200, 14, 12, 13, 11);
+
+int dir = 0; //0=North, 1= East, 2 = South, 3=West
+int y = 0, x = 0; 
+double ang = 0, d = 0;
+ 
+void setup()
+{
+  Serial.begin(115200);
+  stepper1.setSpeed(60);
+  stepper2.setSpeed(60);
+}
+ 
+void loop()
+{
+  if (Serial.available())
+  {
+    int order=Serial.parseInt(); //회전각 int형으로 읽기
+    switch (order) {
+      case 0 : front(); break;
+      case 1 : back(); dir = (dir+2)%4; 
+               break;
+      case 2 : left(); dir = (dir+3)%4; 
+               break;
+      case 3 : right(); dir = (dir+1)%4; 
+               break;
+      //case 4 : ang = atan2((double) -y, (double) -x); d = sqrt((double) (x^2 + y^2)); break;
+      default : ; break;
+    }
+
+    if(dir == 0) y += 200;
+    if(dir == 1) x -= 200;
+    if(dir == 2) y -= 200; 
+    if(dir == 3) x += 200;
+  }
+  
+  stepper1.moveStep();
+  stepper2.moveStep();
+}
+
+void front() 
+{
+  stepper1.setStep(-200);
+  stepper2.setStep(200);
+}
+
+void back()
+{
+    stepper1.setStep(200);
+    stepper2.setStep(-200);
+}
+
+void left()
+{
+  stepper1.setStep(200);
+  stepper2.setStep(200);
+}
+
+void right()
+{
+  stepper1.setStep(-200);
+  stepper2.setStep(-200);
+}
